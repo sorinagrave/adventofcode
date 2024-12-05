@@ -23,7 +23,6 @@ const loadArrays = () => {
 };
 
 const calculateDistances = () => {
-
   const sortedLeft = arrayLeft.sort((n1, n2) => n1 - n2);
   const sortedRight = arrayRight.sort((n1, n2) => n1 - n2);
 
@@ -38,7 +37,6 @@ const calculateDistances = () => {
 };
 
 const calculateSimilarities = () => {
-
   const sims = arrayLeft.reduce(
     (accumulator, currentValue) =>
       accumulator +
