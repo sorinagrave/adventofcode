@@ -1,21 +1,47 @@
 import * as fs from "node:fs";
 const DATA_FILE = "day3/realInput.txt";
 const REGEX_PATTERN = /mul\((\d{1,3}),(\d{1,3})\)/gm;
+const REGEX_PATTERN_WITH_DO = /mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)/gm;
 
 const loadTextFromFile = (): string => {
   return fs.readFileSync(DATA_FILE).toString();
 };
 
-const findPatterns = (text: string):number => {
-  const matches = text.match(REGEX_PATTERN);
-  return matches?.reduce((accumulator, current) => accumulator + convertMulToResult(current),0)??0;
-
+const calculateTotal = (text: string) => {
+  const matches = text.matchAll(REGEX_PATTERN);
+  let current = matches.next();
+  let total = 0;
+  while (current?.value !== undefined) {
+    if (current.value[1] !== undefined && current.value[2] !== undefined) {
+      total = total + Number(current?.value[1]) * Number(current?.value[2]);
+    }
+    current = matches.next();
+  }
+  console.log(`calculateTotal is ${total}`);
 };
 
-const convertMulToResult = (mulExpression:string):number =>{
-  const number1 = mulExpression.substring(mulExpression.indexOf('(') + 1, mulExpression.indexOf(','));
-  const number2 = mulExpression.substring(mulExpression.indexOf(',') + 1, mulExpression.indexOf(')'));
-  return Number(number1)*Number(number2);
-}
+const calculateTotalWithDosAndDonts = (text: string) => {
+  const matches = text.matchAll(REGEX_PATTERN_WITH_DO);
+  let current = matches.next();
+  let allowed = true;
+  let total = 0;
+  while (current?.value !== undefined) {
+    // flip the allowed?
+    if (current?.value[0] === "don't()" || current.value[0] === "do()") {
+      allowed = current.value[0] === "do()";
+    }
+    if (
+      allowed &&
+      current.value[1] !== undefined &&
+      current.value[2] !== undefined
+    ) {
+      total = total + Number(current?.value[1]) * Number(current?.value[2]);
+    }
+    current = matches.next();
+  }
+  console.log(`calculateTotalWithDosAndDonts is ${total}`);
+};
+
 const text = loadTextFromFile();
-console.log(findPatterns(text));
+calculateTotal(text);
+calculateTotalWithDosAndDonts(text);
